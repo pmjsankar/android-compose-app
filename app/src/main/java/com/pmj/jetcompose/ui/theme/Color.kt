@@ -1,0 +1,8 @@
+package com.pmj.jetcompose.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Purple200 = Color(0xFFBB86FC)
+val Purple500 = Color(0xFFed634c)
+val Purple700 = Color(0xFFe62100)
+val Teal200 = Color(0xFF03DAC5)
