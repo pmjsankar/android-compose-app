@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,11 +13,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,23 +36,39 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.pmj.jetcompose.ui.theme.JetComposeTheme
+import com.pmj.jetcompose.ui.theme.Purple500
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-
             JetComposeTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    NavigationComponent(navController)
+                // remember navController so it does not
+                // get recreated on recomposition
+                val navController = rememberNavController()
+                var showBottomBar by rememberSaveable { mutableStateOf(true) }
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+                showBottomBar = when (navBackStackEntry?.destination?.route) {
+                    "login" -> false // on this screen bottom bar should be hidden
+                    "otpScreen" -> false // here too
+                    else -> true // in all other cases show bottom bar
+                }
+
+                Surface(color = Color.White) {
+                    // Scaffold Component
+                    Scaffold(
+                        // Bottom navigation
+                        bottomBar = { if (showBottomBar) BottomNavigationBar(navController = navController) },
+                        content = {
+                            // Navhost: where screens are placed
+                            NavigationComponent(navController = navController)
+                        }
+                    )
                 }
             }
         }
@@ -63,6 +80,20 @@ fun NavigationComponent(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { LoginScreen(navController) }
         composable("otpScreen") { OtpScreen(navController) }
+        // route : Delivery
+        composable("delivery") {
+            ProfileScreen()
+        }
+
+        // route : Dining
+        composable("dining") {
+            SearchScreen()
+        }
+
+        // route : Profile
+        composable("profile") {
+            ProfileScreen()
+        }
     }
 }
 
@@ -256,6 +287,9 @@ fun OtpScreen(navController: NavController) {
                     }
                     else -> {
                         otpErrorState.value = false
+                        navController.navigate("profile") {
+                            popUpTo("otpScreen") { inclusive = true }
+                        }
                         Toast.makeText(
                             context,
                             "Logged in successfully",
@@ -277,5 +311,94 @@ fun OtpScreen(navController: NavController) {
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
         )
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+
+    BottomNavigation(
+
+        // set background color
+        backgroundColor = Purple500
+    ) {
+
+        // observe the backstack
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+        // observe current route to change the icon
+        // color,label color when navigated
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        // Bottom nav items we declared
+        Constants.BottomNavItems.forEach { navItem ->
+
+            // Place the bottom nav items
+            BottomNavigationItem(
+
+                // it currentRoute is equal then its selected route
+                selected = currentRoute == navItem.route,
+
+                // navigate on click
+                onClick = {
+                    navController.navigate(navItem.route)
+                },
+
+                // Icon of navItem
+                icon = {
+                    Icon(imageVector = navItem.icon, contentDescription = navItem.label)
+                },
+
+                // label
+                label = {
+                    Text(text = navItem.label)
+                },
+                alwaysShowLabel = false
+            )
+        }
+    }
+}
+
+@Composable
+fun SearchScreen() {
+    // Column Composable,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        // parameters set to place the items in center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Icon Composable
+        Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = "Profile",
+            tint = Color(0xFF0F9D58)
+        )
+        // Text to Display the current Screen
+        Text(text = "Search", color = Color.Black)
+    }
+}
+
+@Composable
+fun ProfileScreen() {
+    // Column Composable,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        // parameters set to place the items in center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Icon Composable
+        Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = "Profile",
+            tint = Color(0xFF0F9D58)
+        )
+        // Text to Display the current Screen
+        Text(text = "Profile", color = Color.Black)
     }
 }
