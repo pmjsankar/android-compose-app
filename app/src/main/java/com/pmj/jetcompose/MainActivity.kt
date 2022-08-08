@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.pmj.jetcompose.ui.theme.JetComposeTheme
 import com.pmj.jetcompose.ui.theme.Purple500
+import com.pmj.jetcompose.ui.theme.WindowBgColor
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +84,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavigationComponent(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "delivery") {
         composable("login") { LoginScreen(navController) }
         composable("otpScreen") { OtpScreen(navController) }
         // route : Delivery
@@ -405,9 +406,9 @@ fun ProfileScreen() {
 fun DeliveryScreen() {
     Column(
         modifier = Modifier
+            .background(color = WindowBgColor)
             .fillMaxSize()
             .padding(top = 20.dp, start = 20.dp, end = 20.dp)
-            .background(Color.White),
     ) {
         Row(
             modifier = Modifier
@@ -437,36 +438,33 @@ fun DeliveryScreen() {
 @Composable
 fun CircularListView(context: Context) {
     // on below line we are creating and initializing our array list
-    lateinit var courseList: List<CuisineModal>
-    courseList = ArrayList()
+    lateinit var cuisineList: List<CuisineModal>
+    cuisineList = ArrayList()
 
     // on below line we are adding data to our list.
-    courseList = courseList + CuisineModal("Healthy", R.drawable.healthy)
-    courseList = courseList + CuisineModal("Burger", R.drawable.burger)
-    courseList = courseList + CuisineModal("Dosa", R.drawable.masala)
-    courseList = courseList + CuisineModal("Chaat", R.drawable.chaat)
-    courseList = courseList + CuisineModal("Pizza", R.drawable.pizza)
-    courseList = courseList + CuisineModal("Juice", R.drawable.juice)
-    courseList = courseList + CuisineModal("Shakes", R.drawable.shakes)
-    courseList = courseList + CuisineModal("Wraps", R.drawable.wraps)
+    cuisineList = cuisineList + CuisineModal("Healthy", R.drawable.healthy)
+    cuisineList = cuisineList + CuisineModal("Burger", R.drawable.burger)
+    cuisineList = cuisineList + CuisineModal("Dosa", R.drawable.masala)
+    cuisineList = cuisineList + CuisineModal("Chaat", R.drawable.chaat)
+    cuisineList = cuisineList + CuisineModal("Pizza", R.drawable.pizza)
+    cuisineList = cuisineList + CuisineModal("Juice", R.drawable.juice)
+    cuisineList = cuisineList + CuisineModal("Shakes", R.drawable.shakes)
+    cuisineList = cuisineList + CuisineModal("Wraps", R.drawable.wraps)
 
     LazyVerticalGrid(
         cells = GridCells.Fixed(4),
-        modifier = Modifier.padding(6.dp)
+        modifier = Modifier
+            .padding(6.dp)
+            .background(color = WindowBgColor)
     ) {
-        items(courseList.size) {
+        items(cuisineList.size) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(start = 4.dp, top = 10.dp),
             ) {
                 Card(
                     onClick = {
-                        // inside on click we are displaying the toast message.
-                        Toast.makeText(
-                            context,
-                            courseList[it].cuisineName + " selected..",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        cuisineList[it].cuisineName
                     },
 
                     modifier = Modifier.padding(2.dp),
@@ -481,7 +479,7 @@ fun CircularListView(context: Context) {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painter = painterResource(id = courseList[it].cuisineImg),
+                            painter = painterResource(id = cuisineList[it].cuisineImg),
                             contentDescription = "food",
                             modifier = Modifier
                                 .height(68.dp)
@@ -492,7 +490,7 @@ fun CircularListView(context: Context) {
                 }
 
                 Text(
-                    text = courseList[it].cuisineName,
+                    text = cuisineList[it].cuisineName,
                     modifier = Modifier.padding(4.dp),
                     color = Color.Black
                 )
@@ -504,54 +502,99 @@ fun CircularListView(context: Context) {
 @Composable
 fun GridView(context: Context) {
     // on below line we are creating and initializing our array list
-    lateinit var courseList: List<CuisineModal>
-    courseList = ArrayList()
+    lateinit var deliveryList: List<RestaurantModal>
+    deliveryList = ArrayList()
 
     // on below line we are adding data to our list.
-    courseList = courseList + CuisineModal("Pa Pa Ya", R.drawable.burger)
-    courseList = courseList + CuisineModal("Barishh", R.drawable.rolls)
-    courseList = courseList + CuisineModal("Yauatcha", R.drawable.masala)
-    courseList = courseList + CuisineModal("The Chutney Co.", R.drawable.pizza)
-    courseList = courseList + CuisineModal("Carpe Diem", R.drawable.wraps)
-    courseList = courseList + CuisineModal("Out Of The Blue", R.drawable.pizza)
-    courseList = courseList + CuisineModal("Cafe Madras", R.drawable.burger)
+    deliveryList = deliveryList + RestaurantModal(
+        name = "Burger factory",
+        cuisine = "Indian, Biryani, Chinese",
+        location = "Kaloor",
+        distance = "2.2 km",
+        rating = 4.5,
+        offer = "20% OFF",
+        deliveryTime = "33 mins",
+        restaurantImg = R.drawable.burger
+    )
+
+    deliveryList = deliveryList + RestaurantModal(
+        name = "Pizza Hut",
+        cuisine = "Pizza, Beverages",
+        location = "Infopark",
+        distance = "1.2 km",
+        rating = 4.5,
+        offer = "10% OFF",
+        deliveryTime = "26 mins",
+        restaurantImg = R.drawable.pizza
+    )
 
     LazyVerticalGrid(
         cells = GridCells.Fixed(1),
+        modifier = Modifier
+            .background(color = WindowBgColor)
     ) {
-        items(courseList.size) {
+        items(deliveryList.size) {
             Card(
-                modifier = Modifier.padding(8.dp),
-                elevation = 8.dp,
+                modifier = Modifier.padding(top = 12.dp),
+                elevation = 2.dp,
                 onClick = {
-                    Toast.makeText(
-                        context,
-                        courseList[it].cuisineName + " selected..",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
                 },
             ) {
-                Column(
+                Row(
                     Modifier
                         .fillMaxSize()
                         .padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = painterResource(id = courseList[it].cuisineImg),
+                        painter = painterResource(id = deliveryList[it].restaurantImg),
                         contentDescription = "food",
                         modifier = Modifier
-                            .height(60.dp)
-                            .width(60.dp)
-                            .padding(5.dp)
+                            .height(125.dp)
+                            .width(120.dp)
                     )
-                    Spacer(modifier = Modifier.height(9.dp))
-                    Text(
-                        text = courseList[it].cuisineName,
-                        modifier = Modifier.padding(4.dp),
-                        color = Color.Black
-                    )
+                    Column(
+                        modifier = Modifier.padding(start = 6.dp),
+                    ) {
+                        Text(
+                            text = deliveryList[it].name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(top = 5.dp),
+                            color = Color.Black
+                        )
+                        Text(
+                            text = deliveryList[it].cuisine,
+                            modifier = Modifier.padding(top = 5.dp),
+                            color = Color.Black
+                        )
+                        Row {
+                            Text(
+                                text = deliveryList[it].rating.toString(),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                            Text(
+                                text = " . " + deliveryList[it].deliveryTime,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                        }
+                        Row {
+                            Text(
+                                text = deliveryList[it].location.toString(),
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                            Text(
+                                text = " . " + deliveryList[it].distance,
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                        }
+                    }
                 }
             }
         }
