@@ -1,21 +1,24 @@
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+
 package com.pmj.jetcompose
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -25,11 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -82,7 +88,7 @@ fun NavigationComponent(navController: NavHostController) {
         composable("otpScreen") { OtpScreen(navController) }
         // route : Delivery
         composable("delivery") {
-            ProfileScreen()
+            DeliveryScreen()
         }
 
         // route : Dining
@@ -287,7 +293,7 @@ fun OtpScreen(navController: NavController) {
                     }
                     else -> {
                         otpErrorState.value = false
-                        navController.navigate("profile") {
+                        navController.navigate("delivery") {
                             popUpTo("otpScreen") { inclusive = true }
                         }
                         Toast.makeText(
@@ -316,21 +322,13 @@ fun OtpScreen(navController: NavController) {
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-
     BottomNavigation(
-
-        // set background color
         backgroundColor = Purple500
     ) {
 
         // observe the backstack
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-        // observe current route to change the icon
-        // color,label color when navigated
         val currentRoute = navBackStackEntry?.destination?.route
-
-        // Bottom nav items we declared
         Constants.BottomNavItems.forEach { navItem ->
 
             // Place the bottom nav items
@@ -401,4 +399,167 @@ fun ProfileScreen() {
         // Text to Display the current Screen
         Text(text = "Profile", color = Color.Black)
     }
+}
+
+@Composable
+fun DeliveryScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+            .background(Color.White),
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.LocalDining,
+                contentDescription = "Jet Food",
+                tint = Color(0xFF0F9D58)
+            )
+            Text(
+                text = "Jet Food", fontSize = 20.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 10.dp)
+            )
+        }
+        CircularListView(LocalContext.current)
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = "Recommended for you", fontSize = 20.sp, fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 10.dp)
+        )
+        GridView(LocalContext.current)
+    }
+}
+
+@Composable
+fun CircularListView(context: Context) {
+    // on below line we are creating and initializing our array list
+    lateinit var courseList: List<CuisineModal>
+    courseList = ArrayList()
+
+    // on below line we are adding data to our list.
+    courseList = courseList + CuisineModal("Healthy", R.drawable.healthy)
+    courseList = courseList + CuisineModal("Burger", R.drawable.burger)
+    courseList = courseList + CuisineModal("Dosa", R.drawable.masala)
+    courseList = courseList + CuisineModal("Chaat", R.drawable.chaat)
+    courseList = courseList + CuisineModal("Pizza", R.drawable.pizza)
+    courseList = courseList + CuisineModal("Juice", R.drawable.juice)
+    courseList = courseList + CuisineModal("Shakes", R.drawable.shakes)
+    courseList = courseList + CuisineModal("Wraps", R.drawable.wraps)
+
+    LazyVerticalGrid(
+        cells = GridCells.Fixed(4),
+        modifier = Modifier.padding(6.dp)
+    ) {
+        items(courseList.size) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(start = 4.dp, top = 10.dp),
+            ) {
+                Card(
+                    onClick = {
+                        // inside on click we are displaying the toast message.
+                        Toast.makeText(
+                            context,
+                            courseList[it].cuisineName + " selected..",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+
+                    modifier = Modifier.padding(2.dp),
+                    shape = CircleShape,
+                    elevation = 2.dp
+                ) {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = courseList[it].cuisineImg),
+                            contentDescription = "food",
+                            modifier = Modifier
+                                .height(68.dp)
+                                .width(68.dp)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                    }
+                }
+
+                Text(
+                    text = courseList[it].cuisineName,
+                    modifier = Modifier.padding(4.dp),
+                    color = Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun GridView(context: Context) {
+    // on below line we are creating and initializing our array list
+    lateinit var courseList: List<CuisineModal>
+    courseList = ArrayList()
+
+    // on below line we are adding data to our list.
+    courseList = courseList + CuisineModal("Pa Pa Ya", R.drawable.burger)
+    courseList = courseList + CuisineModal("Barishh", R.drawable.rolls)
+    courseList = courseList + CuisineModal("Yauatcha", R.drawable.masala)
+    courseList = courseList + CuisineModal("The Chutney Co.", R.drawable.pizza)
+    courseList = courseList + CuisineModal("Carpe Diem", R.drawable.wraps)
+    courseList = courseList + CuisineModal("Out Of The Blue", R.drawable.pizza)
+    courseList = courseList + CuisineModal("Cafe Madras", R.drawable.burger)
+
+    LazyVerticalGrid(
+        cells = GridCells.Fixed(1),
+    ) {
+        items(courseList.size) {
+            Card(
+                modifier = Modifier.padding(8.dp),
+                elevation = 8.dp,
+                onClick = {
+                    Toast.makeText(
+                        context,
+                        courseList[it].cuisineName + " selected..",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+            ) {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = courseList[it].cuisineImg),
+                        contentDescription = "food",
+                        modifier = Modifier
+                            .height(60.dp)
+                            .width(60.dp)
+                            .padding(5.dp)
+                    )
+                    Spacer(modifier = Modifier.height(9.dp))
+                    Text(
+                        text = courseList[it].cuisineName,
+                        modifier = Modifier.padding(4.dp),
+                        color = Color.Black
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ComposablePreview() {
+    DeliveryScreen()
 }
