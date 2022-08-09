@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
-
 package com.pmj.jetcompose
 
-import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -12,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -34,6 +32,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -402,41 +401,201 @@ fun ProfileScreen() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun DeliveryScreen() {
-    Column(
+
+    val searchItem = remember { mutableStateOf(TextFieldValue()) }
+    val focusManager = LocalFocusManager.current
+
+    // on below line we are creating and initializing our array list
+    lateinit var deliveryList: List<RestaurantModal>
+    deliveryList = ArrayList()
+
+    // on below line we are adding data to our list.
+    deliveryList = deliveryList + RestaurantModal(
+        name = "Burger factory",
+        cuisine = "Indian, Biryani, Chinese",
+        location = "Kaloor",
+        distance = "2.2 km",
+        rating = 4.5,
+        offer = "20% OFF",
+        deliveryTime = "33 mins",
+        restaurantImg = R.drawable.burger
+    )
+
+    deliveryList = deliveryList + RestaurantModal(
+        name = "Pizza Hut",
+        cuisine = "Pizza, Beverages",
+        location = "Infopark",
+        distance = "1.2 km",
+        rating = 4.5,
+        offer = "10% OFF",
+        deliveryTime = "26 mins",
+        restaurantImg = R.drawable.pizza
+    )
+
+    deliveryList = deliveryList + RestaurantModal(
+        name = "Madras Cafe",
+        cuisine = "South Indian, North Indian, Chaat",
+        location = "Edapally",
+        distance = "5.2 km",
+        rating = 4.3,
+        offer = "30% OFF",
+        deliveryTime = "45 mins",
+        restaurantImg = R.drawable.masala
+    )
+
+    LazyColumn(
         modifier = Modifier
             .background(color = WindowBgColor)
             .fillMaxSize()
-            .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+            .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 70.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = Icons.Default.LocalDining,
-                contentDescription = "Jet Food",
-                tint = Color(0xFF0F9D58)
-            )
+
+        item {
+            Row(
+                modifier = Modifier
+                    .padding(top = 10.dp, bottom = 14.dp)
+                    .fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocalDining,
+                    contentDescription = "Jet Food",
+                    tint = Color(0xFF0F9D58)
+                )
+                Text(
+                    text = "Jet Food", fontSize = 20.sp, fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 10.dp)
+                )
+            }
+        }
+
+        stickyHeader {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = WindowBgColor)
+            ) {
+                OutlinedTextField(
+                    value = searchItem.value,
+                    onValueChange = {
+                        searchItem.value = it
+                    },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    label = {
+                        Text(
+                            text = "Search for restaurant, cuisine or food",
+                            style = MaterialTheme.typography.body1
+                        )
+                    },
+                )
+
+                Spacer(Modifier.size(12.dp))
+            }
+        }
+
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(270.dp)
+                    .background(color = WindowBgColor)
+            ) {
+                CircularListView()
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Jet Food", fontSize = 20.sp, fontWeight = FontWeight.Bold,
+                text = "Recommended for you", fontSize = 17.sp, fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 10.dp)
             )
         }
-        CircularListView(LocalContext.current)
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Recommended for you", fontSize = 20.sp, fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 10.dp)
-        )
-        GridView(LocalContext.current)
+
+        items(deliveryList.size) {
+            Card(
+                modifier = Modifier.padding(top = 12.dp),
+                elevation = 2.dp,
+                onClick = {
+
+                },
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(5.dp),
+                ) {
+                    Image(
+                        painter = painterResource(id = deliveryList[it].restaurantImg),
+                        contentDescription = "food",
+                        modifier = Modifier
+                            .height(125.dp)
+                            .width(120.dp)
+                    )
+                    Column(
+                        modifier = Modifier.padding(start = 6.dp),
+                    ) {
+                        Text(
+                            text = deliveryList[it].name,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(top = 5.dp),
+                            color = Color.Black
+                        )
+                        Text(
+                            text = deliveryList[it].cuisine,
+                            modifier = Modifier.padding(top = 5.dp),
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.Black
+                        )
+                        Row {
+                            Text(
+                                text = deliveryList[it].rating.toString(),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                            Text(
+                                text = " . " + deliveryList[it].deliveryTime,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                        }
+                        Row {
+                            Text(
+                                text = deliveryList[it].location,
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                            Text(
+                                text = " . " + deliveryList[it].distance,
+                                modifier = Modifier.padding(top = 5.dp),
+                                color = Color.Black
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun CircularListView(context: Context) {
+fun CircularListView() {
     // on below line we are creating and initializing our array list
     lateinit var cuisineList: List<CuisineModal>
     cuisineList = ArrayList()
@@ -494,108 +653,6 @@ fun CircularListView(context: Context) {
                     modifier = Modifier.padding(4.dp),
                     color = Color.Black
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun GridView(context: Context) {
-    // on below line we are creating and initializing our array list
-    lateinit var deliveryList: List<RestaurantModal>
-    deliveryList = ArrayList()
-
-    // on below line we are adding data to our list.
-    deliveryList = deliveryList + RestaurantModal(
-        name = "Burger factory",
-        cuisine = "Indian, Biryani, Chinese",
-        location = "Kaloor",
-        distance = "2.2 km",
-        rating = 4.5,
-        offer = "20% OFF",
-        deliveryTime = "33 mins",
-        restaurantImg = R.drawable.burger
-    )
-
-    deliveryList = deliveryList + RestaurantModal(
-        name = "Pizza Hut",
-        cuisine = "Pizza, Beverages",
-        location = "Infopark",
-        distance = "1.2 km",
-        rating = 4.5,
-        offer = "10% OFF",
-        deliveryTime = "26 mins",
-        restaurantImg = R.drawable.pizza
-    )
-
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(1),
-        modifier = Modifier
-            .background(color = WindowBgColor)
-    ) {
-        items(deliveryList.size) {
-            Card(
-                modifier = Modifier.padding(top = 12.dp),
-                elevation = 2.dp,
-                onClick = {
-
-                },
-            ) {
-                Row(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(5.dp),
-                ) {
-                    Image(
-                        painter = painterResource(id = deliveryList[it].restaurantImg),
-                        contentDescription = "food",
-                        modifier = Modifier
-                            .height(125.dp)
-                            .width(120.dp)
-                    )
-                    Column(
-                        modifier = Modifier.padding(start = 6.dp),
-                    ) {
-                        Text(
-                            text = deliveryList[it].name,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(top = 5.dp),
-                            color = Color.Black
-                        )
-                        Text(
-                            text = deliveryList[it].cuisine,
-                            modifier = Modifier.padding(top = 5.dp),
-                            color = Color.Black
-                        )
-                        Row {
-                            Text(
-                                text = deliveryList[it].rating.toString(),
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 5.dp),
-                                color = Color.Black
-                            )
-                            Text(
-                                text = " . " + deliveryList[it].deliveryTime,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 5.dp),
-                                color = Color.Black
-                            )
-                        }
-                        Row {
-                            Text(
-                                text = deliveryList[it].location.toString(),
-                                modifier = Modifier.padding(top = 5.dp),
-                                color = Color.Black
-                            )
-                            Text(
-                                text = " . " + deliveryList[it].distance,
-                                modifier = Modifier.padding(top = 5.dp),
-                                color = Color.Black
-                            )
-                        }
-                    }
-                }
             }
         }
     }
