@@ -1,4 +1,4 @@
-package com.pmj.jetcompose
+package com.pmj.jetcompose.model
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

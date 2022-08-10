@@ -1,4 +1,4 @@
-package com.pmj.jetcompose.ui.theme
+package com.pmj.jetcompose.theme
 
 import androidx.compose.ui.graphics.Color
 

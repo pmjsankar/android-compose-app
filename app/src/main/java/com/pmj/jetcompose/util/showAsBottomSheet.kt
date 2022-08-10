@@ -1,4 +1,4 @@
-package com.pmj.jetcompose
+package com.pmj.jetcompose.util
 
 import android.app.Activity
 import android.content.Context

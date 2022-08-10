@@ -1,4 +1,4 @@
-package com.pmj.jetcompose
+package com.pmj.jetcompose.model
 
 data class RestaurantModal(
     val name: String,

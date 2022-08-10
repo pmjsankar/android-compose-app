@@ -1,9 +1,10 @@
-package com.pmj.jetcompose
+package com.pmj.jetcompose.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.Dining
 import androidx.compose.material.icons.filled.Person
+import com.pmj.jetcompose.model.BottomNavItem
 
 object Constants {
     val BottomNavItems = listOf(
