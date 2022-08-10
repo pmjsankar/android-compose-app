@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">JetCompose</string>
+    <string name="bullet">\u2022</string>
 </resources>

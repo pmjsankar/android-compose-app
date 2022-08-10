@@ -7,11 +7,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -23,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -404,7 +408,7 @@ fun ProfileScreen() {
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun DeliveryScreen() {
-
+    val context = LocalContext.current
     val searchItem = remember { mutableStateOf(TextFieldValue()) }
     val focusManager = LocalFocusManager.current
 
@@ -415,7 +419,7 @@ fun DeliveryScreen() {
     // on below line we are adding data to our list.
     deliveryList = deliveryList + RestaurantModal(
         name = "Burger factory",
-        cuisine = "Indian, Biryani, Chinese",
+        cuisine = "Burger, Wraps, Sandwiches",
         location = "Kaloor",
         distance = "2.2 km",
         rating = 4.5,
@@ -440,33 +444,67 @@ fun DeliveryScreen() {
         cuisine = "South Indian, North Indian, Chaat",
         location = "Edapally",
         distance = "5.2 km",
-        rating = 4.3,
+        rating = 3.4,
         offer = "30% OFF",
         deliveryTime = "45 mins",
         restaurantImg = R.drawable.masala
+    )
+
+    deliveryList = deliveryList + RestaurantModal(
+        name = "Ice berg",
+        cuisine = "Ice cream, shakes, desserts",
+        location = "Vytila",
+        distance = "5.8 km",
+        rating = 3.5,
+        offer = "25% OFF",
+        deliveryTime = "50 mins",
+        restaurantImg = R.drawable.juice
     )
 
     LazyColumn(
         modifier = Modifier
             .background(color = WindowBgColor)
             .fillMaxSize()
-            .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 70.dp)
+            .padding(top = 2.dp, start = 20.dp, end = 20.dp, bottom = 60.dp)
     ) {
 
         item {
-            Row(
+            Column(
                 modifier = Modifier
-                    .padding(top = 10.dp, bottom = 14.dp)
-                    .fillMaxWidth()
+                    .clickable(
+                        onClick = {
+                            context.getActivity()?.showAsBottomSheet {
+                                ChooseLocationScreen()
+                            }
+                        },
+                    )
             ) {
-                Icon(
-                    imageVector = Icons.Default.LocalDining,
-                    contentDescription = "Jet Food",
-                    tint = Color(0xFF0F9D58)
-                )
+                Row {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Location",
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .padding(top = 14.dp)
+                            .size(28.dp)
+                    )
+                    Text(
+                        text = "Home", fontSize = 22.sp, fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(
+                            start = 8.dp, top = 10.dp
+                        )
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ExpandMore,
+                        contentDescription = "Choose location",
+                        tint = Color.Black,
+                        modifier = Modifier.padding(start = 8.dp, top = 15.dp)
+                    )
+                }
                 Text(
-                    text = "Jet Food", fontSize = 20.sp, fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 10.dp)
+                    text = "5B, MerryLand, T Nagar", fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 36.dp)
                 )
             }
         }
@@ -476,6 +514,7 @@ fun DeliveryScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = WindowBgColor)
+                    .padding(top = 10.dp)
             ) {
                 OutlinedTextField(
                     value = searchItem.value,
@@ -489,6 +528,12 @@ fun DeliveryScreen() {
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done
+                    ),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = DarkGray,
+                        unfocusedBorderColor = Gray,
+                        focusedLabelColor = DarkGray,
+                        cursorColor = DarkGray
                     ),
                     label = {
                         Text(
@@ -550,39 +595,62 @@ fun DeliveryScreen() {
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(top = 5.dp),
+                            modifier = Modifier.padding(top = 5.dp, end = 5.dp),
                             color = Color.Black
                         )
-                        Text(
-                            text = deliveryList[it].cuisine,
+                        Row(
                             modifier = Modifier.padding(top = 5.dp),
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis,
-                            color = Color.Black
-                        )
-                        Row {
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = if (deliveryList[it].rating > 3.5) Color.Green else Color.Red,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(2.dp)
+                            ) {
+                                Text(
+                                    text = deliveryList[it].rating.toString(),
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    modifier = Modifier.padding(top = 0.dp, bottom = 0.dp),
+                                )
+                            }
                             Text(
-                                text = deliveryList[it].rating.toString(),
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 5.dp),
-                                color = Color.Black
-                            )
-                            Text(
-                                text = " . " + deliveryList[it].deliveryTime,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 5.dp),
+                                text = deliveryList[it].cuisine,
+                                modifier = Modifier.padding(start = 6.dp, end = 6.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                                 color = Color.Black
                             )
                         }
-                        Row {
+                        Row(modifier = Modifier.padding(top = 5.dp)) {
                             Text(
-                                text = deliveryList[it].location,
-                                modifier = Modifier.padding(top = 5.dp),
+                                text = deliveryList[it].deliveryTime,
+                                fontWeight = FontWeight.Bold,
                                 color = Color.Black
                             )
                             Text(
-                                text = " . " + deliveryList[it].distance,
-                                modifier = Modifier.padding(top = 5.dp),
+                                text = context.getString(R.string.bullet),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                                color = Color.Black
+                            )
+                            Text(
+                                text = deliveryList[it].location,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = context.getString(R.string.bullet),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                                color = Color.Black
+                            )
+                            Text(
+                                text = deliveryList[it].distance,
                                 color = Color.Black
                             )
                         }
@@ -656,6 +724,68 @@ fun CircularListView() {
             }
         }
     }
+}
+
+@Composable
+fun ChooseLocationScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(20.dp)
+
+    ) {
+        Text(
+            text = "Select location", fontSize = 18.sp, fontWeight = FontWeight.Bold,
+            color = Color.Black,
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Home,
+                contentDescription = "Home",
+                tint = DarkGray,
+                modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
+            )
+            Column {
+                Text(
+                    text = "Home", fontSize = 16.sp, fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(
+                        start = 10.dp, top = 10.dp
+                    )
+                )
+                Text(
+                    text = "5B, MerryLand, T Nagar", fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
+                )
+            }
+        }
+        Divider(color = Gray, thickness = 1.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 10.dp, bottom = 10.dp)
+                .clickable(
+                    onClick = {
+
+                    },
+                )
+        ) {
+            Icon(
+                imageVector = Icons.Default.AddLocation,
+                contentDescription = "AddLocation",
+                tint = DarkGray,
+                modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
+            )
+            Text(
+                text = "Add address", fontSize = 14.sp,
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+            )
+        }
+    }
+
 }
 
 @Preview
