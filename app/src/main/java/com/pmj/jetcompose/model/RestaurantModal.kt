@@ -8,5 +8,5 @@ data class RestaurantModal(
     val rating: Double,
     val offer: String,
     val deliveryTime: String,
-    val restaurantImg: Int
+    val restaurantImg: String
 )
