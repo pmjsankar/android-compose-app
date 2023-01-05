@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.pmj.jetcompose.util.Route.DELIVERY
+import com.pmj.jetcompose.util.Route.OTP
 
 @Composable
 fun OtpScreen(navController: NavController) {
@@ -111,8 +113,8 @@ fun OtpScreen(navController: NavController) {
                     }
                     else -> {
                         otpErrorState.value = false
-                        navController.navigate("delivery") {
-                            popUpTo("otpScreen") { inclusive = true }
+                        navController.navigate(DELIVERY) {
+                            popUpTo(OTP) { inclusive = true }
                         }
                         Toast.makeText(
                             context,

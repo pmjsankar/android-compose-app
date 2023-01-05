@@ -30,6 +30,11 @@ import com.pmj.jetcompose.ui.DeliveryScreen
 import com.pmj.jetcompose.ui.LoginScreen
 import com.pmj.jetcompose.ui.OtpScreen
 import com.pmj.jetcompose.util.Constants
+import com.pmj.jetcompose.util.Route.DELIVERY
+import com.pmj.jetcompose.util.Route.DINING
+import com.pmj.jetcompose.util.Route.LOGIN
+import com.pmj.jetcompose.util.Route.OTP
+import com.pmj.jetcompose.util.Route.PROFILE
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,8 +48,8 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 showBottomBar = when (navBackStackEntry?.destination?.route) {
-                    "login" -> false // on this screen bottom bar should be hidden
-                    "otpScreen" -> false // here too
+                    LOGIN -> false // on this screen bottom bar should be hidden
+                    OTP -> false // here too
                     else -> true // in all other cases show bottom bar
                 }
 
@@ -66,21 +71,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavigationComponent(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "delivery") {
-        composable("login") { LoginScreen(navController) }
-        composable("otpScreen") { OtpScreen(navController) }
+    NavHost(navController = navController, startDestination = LOGIN) {
+        composable(LOGIN) { LoginScreen(navController) }
+        composable(OTP) { OtpScreen(navController) }
         // route : Delivery
-        composable("delivery") {
+        composable(DELIVERY) {
             DeliveryScreen()
         }
 
         // route : Dining
-        composable("dining") {
+        composable(DINING) {
             SearchScreen()
         }
 
         // route : Profile
-        composable("profile") {
+        composable(PROFILE) {
             ProfileScreen()
         }
     }

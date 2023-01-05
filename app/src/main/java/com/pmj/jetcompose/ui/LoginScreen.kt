@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.pmj.jetcompose.util.Route.OTP
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -109,7 +110,7 @@ fun LoginScreen(navController: NavController) {
                     }
                     else -> {
                         phoneErrorState.value = false
-                        navController.navigate("otpScreen")
+                        navController.navigate(OTP)
                     }
                 }
 
