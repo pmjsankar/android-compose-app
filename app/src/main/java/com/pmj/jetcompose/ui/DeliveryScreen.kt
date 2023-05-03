@@ -1,108 +1,58 @@
 package com.pmj.jetcompose.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
-import com.pmj.jetcompose.R
-import com.pmj.jetcompose.model.CuisineModal
-import com.pmj.jetcompose.model.RestaurantModal
-import com.pmj.jetcompose.theme.DarkGreen
-import com.pmj.jetcompose.theme.LightGreen
 import com.pmj.jetcompose.theme.WindowBgColor
 import com.pmj.jetcompose.util.getActivity
 import com.pmj.jetcompose.util.showAsBottomSheet
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DeliveryScreen() {
+fun DeliveryScreen(viewModel: RestaurantViewModel) {
     val context = LocalContext.current
     val searchItem = remember { mutableStateOf(TextFieldValue()) }
     val focusManager = LocalFocusManager.current
 
-    // on below line we are creating and initializing our array list
-    lateinit var deliveryList: List<RestaurantModal>
-    deliveryList = ArrayList()
-
-    // on below line we are adding data to our list.
-    deliveryList = deliveryList + RestaurantModal(
-        name = "Burger Factory",
-        cuisine = "Burger, Wraps, Sandwiches",
-        location = "Kaloor",
-        distance = "2.2 km",
-        rating = 4.6,
-        offer = "20% OFF\nUPTO ₹80",
-        deliveryTime = "33 mins",
-        restaurantImg = "https://pmjsankar.github.io/api/img/burger.jpg"
-    )
-
-    deliveryList = deliveryList + RestaurantModal(
-        name = "Pizza Hut",
-        cuisine = "Pizza, Beverages",
-        location = "Infopark",
-        distance = "1.2 km",
-        rating = 4.5,
-        offer = "EVERY ITEM\n @₹119",
-        deliveryTime = "26 mins",
-        restaurantImg = "https://pmjsankar.github.io/api/img/pizza.png"
-    )
-
-    deliveryList = deliveryList + RestaurantModal(
-        name = "Madras Cafe",
-        cuisine = "South Indian, North Indian, Chaat",
-        location = "Edapally",
-        distance = "5.2 km",
-        rating = 3.8,
-        offer = "FLAT ₹40 OFF",
-        deliveryTime = "45 mins",
-        restaurantImg = "https://pmjsankar.github.io/api/img/madras.png"
-    )
-
-    deliveryList = deliveryList + RestaurantModal(
-        name = "Ice berg",
-        cuisine = "Ice cream, shakes, desserts",
-        location = "Vytila",
-        distance = "5.8 km",
-        rating = 3.6,
-        offer = "25% OFF",
-        deliveryTime = "50 mins",
-        restaurantImg = "https://pmjsankar.github.io/api/img/shakes.jpg"
-    )
+    LaunchedEffect(Unit, block = {
+        viewModel.getRestaurants()
+    })
 
     LazyColumn(
         modifier = Modifier
@@ -209,180 +159,9 @@ fun DeliveryScreen() {
             )
         }
 
-        items(deliveryList.size) {
-            Card(
-                modifier = Modifier.padding(top = 12.dp),
-                shape = RoundedCornerShape(12.dp),
-                elevation = 2.dp,
-                onClick = {
-
-                },
-            ) {
-                Row(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(end = 5.dp),
-                ) {
-                    Box {
-                        Image(
-                            painter = rememberAsyncImagePainter(deliveryList[it].restaurantImg),
-                            contentDescription = "food",
-                            contentScale = ContentScale.FillBounds,
-                            modifier = Modifier
-                                .height(160.dp)
-                                .width(125.dp)
-                                .drawWithCache {
-                                    val gradient = Brush.verticalGradient(
-                                        colors = listOf(Color.Transparent, Color.Black),
-                                        startY = size.height / 3,
-                                        endY = size.height
-                                    )
-                                    onDrawWithContent {
-                                        drawContent()
-                                        drawRect(gradient, blendMode = BlendMode.Multiply)
-                                    }
-                                }
-                        )
-                        Text(
-                            text = deliveryList[it].offer,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier
-                                .padding(start = 8.dp, bottom = 6.dp)
-                                .align(Alignment.BottomStart),
-                        )
-                    }
-                    Column(
-                        modifier = Modifier.padding(start = 10.dp, top = 4.dp),
-                    ) {
-                        Text(
-                            text = deliveryList[it].name,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(top = 5.dp, end = 5.dp),
-                            color = Color.Black
-                        )
-                        Row(
-                            modifier = Modifier.padding(top = 5.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        color = if (deliveryList[it].rating > 4) DarkGreen else LightGreen,
-                                        shape = RoundedCornerShape(6.dp)
-                                    )
-                                    .padding(2.dp)
-                            ) {
-                                Text(
-                                    text = deliveryList[it].rating.toString(),
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    modifier = Modifier.padding(top = 0.dp, bottom = 0.dp),
-                                )
-                            }
-                            Text(
-                                text = deliveryList[it].deliveryTime,
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(start = 10.dp),
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
-                        }
-                        Row(modifier = Modifier.padding(top = 5.dp)) {
-                            Text(
-                                text = deliveryList[it].location,
-                                color = Color.Black
-                            )
-                            Text(
-                                text = context.getString(R.string.bullet),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                                color = Color.Black
-                            )
-                            Text(
-                                text = deliveryList[it].distance,
-                                color = Color.Black
-                            )
-                        }
-                        Text(
-                            text = deliveryList[it].cuisine,
-                            modifier = Modifier.padding(end = 6.dp),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = Color.Black
-                        )
-                    }
-                }
-            }
+        items(viewModel.restaurants.size) {
+            DeliveryItem(viewModel.restaurants[it])
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
-@Composable
-fun CircularListView() {
-    // on below line we are creating and initializing our array list
-    lateinit var cuisineList: List<CuisineModal>
-    cuisineList = ArrayList()
-
-    // on below line we are adding data to our list.
-    cuisineList = cuisineList + CuisineModal("Healthy", R.drawable.healthy)
-    cuisineList = cuisineList + CuisineModal("Burger", R.drawable.burger)
-    cuisineList = cuisineList + CuisineModal("Dosa", R.drawable.masala)
-    cuisineList = cuisineList + CuisineModal("Chaat", R.drawable.chaat)
-    cuisineList = cuisineList + CuisineModal("Pizza", R.drawable.pizza)
-    cuisineList = cuisineList + CuisineModal("Juice", R.drawable.juice)
-    cuisineList = cuisineList + CuisineModal("Shakes", R.drawable.shakes)
-    cuisineList = cuisineList + CuisineModal("Wraps", R.drawable.wraps)
-
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(4),
-        modifier = Modifier
-            .padding(6.dp)
-            .background(color = WindowBgColor)
-    ) {
-        items(cuisineList.size) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(start = 4.dp, top = 10.dp),
-            ) {
-                Card(
-                    onClick = {
-                        cuisineList[it].cuisineName
-                    },
-
-                    modifier = Modifier.padding(2.dp),
-                    shape = CircleShape,
-                    elevation = 2.dp
-                ) {
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = cuisineList[it].cuisineImg),
-                            contentDescription = "food",
-                            modifier = Modifier
-                                .height(68.dp)
-                                .width(68.dp)
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                    }
-                }
-
-                Text(
-                    text = cuisineList[it].cuisineName,
-                    modifier = Modifier.padding(4.dp),
-                    color = Color.Black
-                )
-            }
-        }
-    }
-}

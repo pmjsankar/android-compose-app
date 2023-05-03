@@ -3,11 +3,18 @@ package com.pmj.jetcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
@@ -18,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,6 +35,7 @@ import com.pmj.jetcompose.theme.Purple500
 import com.pmj.jetcompose.ui.DeliveryScreen
 import com.pmj.jetcompose.ui.LoginScreen
 import com.pmj.jetcompose.ui.OtpScreen
+import com.pmj.jetcompose.ui.RestaurantViewModel
 import com.pmj.jetcompose.util.Constants
 import com.pmj.jetcompose.util.Route.DELIVERY
 import com.pmj.jetcompose.util.Route.DINING
@@ -37,6 +44,9 @@ import com.pmj.jetcompose.util.Route.OTP
 import com.pmj.jetcompose.util.Route.PROFILE
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: RestaurantViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -60,7 +70,7 @@ class MainActivity : ComponentActivity() {
                         bottomBar = { if (showBottomBar) BottomNavigationBar(navController = navController) },
                         content = {
                             // Navhost: where screens are placed
-                            NavigationComponent(navController = navController)
+                            NavigationComponent(it, navController = navController, viewModel)
                         }
                     )
                 }
@@ -70,13 +80,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NavigationComponent(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = LOGIN) {
+fun NavigationComponent(
+    paddingValues: PaddingValues,
+    navController: NavHostController,
+    viewModel: RestaurantViewModel
+) {
+    NavHost(navController = navController, startDestination = DELIVERY) {
         composable(LOGIN) { LoginScreen(navController) }
         composable(OTP) { OtpScreen(navController) }
         // route : Delivery
         composable(DELIVERY) {
-            DeliveryScreen()
+            DeliveryScreen(viewModel)
         }
 
         // route : Dining
@@ -170,11 +184,4 @@ fun ProfileScreen() {
         // Text to Display the current Screen
         Text(text = "Profile", color = Color.Black)
     }
-}
-
-
-@Preview
-@Composable
-fun ComposablePreview() {
-    DeliveryScreen()
 }
