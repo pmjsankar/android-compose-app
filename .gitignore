@@ -87,6 +87,5 @@ lint/tmp/
 /gradle/wrapper/gradle-wrapper.jar
 /gradle/wrapper/gradle-wrapper.properties
 /gradlew
-/settings.gradle
 /gradlew.bat
 /app/src/main/ic_launcher-playstore.png
